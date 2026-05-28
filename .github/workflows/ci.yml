@@ -1,44 +1,32 @@
-name: CI - API Tests
+name: API Tests
 
 on:
   push:
-    branches: [main, master]
+    branches: [ main ]
   pull_request:
-    branches: [main, master]
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18, 20, 22]
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Start server
-        run: node server.js &
-        env:
-          NODE_ENV: test
-
-      - name: Wait for server to be ready
-        run: |
-          for i in $(seq 1 10); do
-            curl -s https://echo.usebruno.com > /dev/null && break
-            echo "Waiting for server... attempt $i"
-            sleep 1
-          done
-
-      - name: Run Bruno API tests
-        run: npx @usebruno/cli run echo-bru.bru
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install Bruno CLI
+      run: npm install -g @usebruno/cli
+    
+    - name: Run API Tests
+      run: bru run echo-bru.bru --reporter-html results.html
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: results.html
