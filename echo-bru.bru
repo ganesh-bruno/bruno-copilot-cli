@@ -1,0 +1,41 @@
+meta {
+  name: Echo Bru
+  type: http
+  seq: 3
+}
+
+post {
+  url: https://echo.usebruno.com
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "message": "Hello, Bruno!"
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("response has message field", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("message");
+  });
+
+  test("returned message matches sent value", function() {
+    const body = res.getBody();
+    expect(body.message).to.equal("Hello, Bruno!");
+  });
+
+  test("content-type is application/json", function() {
+    expect(res.getHeader("content-type")).to.include("application/json");
+  });
+}
