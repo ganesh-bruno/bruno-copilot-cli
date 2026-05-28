@@ -35,10 +35,10 @@ jobs:
       - name: Wait for server to be ready
         run: |
           for i in $(seq 1 10); do
-            curl -s http://localhost:3000/users > /dev/null && break
+            curl -s https://echo.usebruno.com > /dev/null && break
             echo "Waiting for server... attempt $i"
             sleep 1
           done
 
       - name: Run Bruno API tests
-        run: npx @usebruno/cli run --env Local bruno-collection
+        run: npx @usebruno/cli run echo-bru.bru
