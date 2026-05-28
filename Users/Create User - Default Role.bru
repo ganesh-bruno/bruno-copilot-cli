@@ -1,0 +1,44 @@
+meta {
+  name: Create User - Default Role
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Eve Default",
+    "email": "eve@example.com"
+  }
+}
+
+tests {
+  test("status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("role defaults to 'user' when not provided", function() {
+    const body = res.getBody();
+    expect(body.role).to.equal("user");
+  });
+
+  test("name and email match sent values", function() {
+    const body = res.getBody();
+    expect(body.name).to.equal("Eve Default");
+    expect(body.email).to.equal("eve@example.com");
+  });
+
+  test("id is auto-generated", function() {
+    const body = res.getBody();
+    expect(typeof body.id).to.equal("number");
+  });
+}

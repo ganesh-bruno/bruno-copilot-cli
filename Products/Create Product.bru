@@ -1,0 +1,69 @@
+meta {
+  name: Create Product
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/products
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Wireless Mouse",
+    "price": 29.99,
+    "category": "electronics",
+    "stock": 75
+  }
+}
+
+tests {
+  test("status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("response has all product fields", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("id");
+    expect(body).to.have.property("name");
+    expect(body).to.have.property("price");
+    expect(body).to.have.property("category");
+    expect(body).to.have.property("stock");
+  });
+
+  test("returned name matches sent value", function() {
+    const body = res.getBody();
+    expect(body.name).to.equal("Wireless Mouse");
+  });
+
+  test("returned price matches sent value", function() {
+    const body = res.getBody();
+    expect(body.price).to.equal(29.99);
+  });
+
+  test("returned category matches sent value", function() {
+    const body = res.getBody();
+    expect(body.category).to.equal("electronics");
+  });
+
+  test("returned stock matches sent value", function() {
+    const body = res.getBody();
+    expect(body.stock).to.equal(75);
+  });
+
+  test("id is an auto-generated number", function() {
+    const body = res.getBody();
+    expect(typeof body.id).to.equal("number");
+    expect(body.id).to.be.greaterThan(0);
+  });
+
+  test("content-type is application/json", function() {
+    expect(res.getHeader("content-type")).to.include("application/json");
+  });
+}

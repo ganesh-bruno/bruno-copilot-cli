@@ -1,0 +1,37 @@
+meta {
+  name: Create User - Missing Name
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "noname@example.com"
+  }
+}
+
+tests {
+  test("status code is 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("response has error property", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("error");
+  });
+
+  test("error mentions required fields", function() {
+    const body = res.getBody();
+    expect(body.error).to.equal("name and email are required");
+  });
+}

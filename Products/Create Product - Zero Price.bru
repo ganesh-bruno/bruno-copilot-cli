@@ -1,0 +1,39 @@
+meta {
+  name: Create Product - Zero Price
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/products
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Free Sample",
+    "price": 0
+  }
+}
+
+tests {
+  test("status code is 201 - zero price is valid", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("price is 0", function() {
+    const body = res.getBody();
+    expect(body.price).to.equal(0);
+  });
+
+  test("defaults are applied", function() {
+    const body = res.getBody();
+    expect(body.category).to.equal("general");
+    expect(body.stock).to.equal(0);
+  });
+}

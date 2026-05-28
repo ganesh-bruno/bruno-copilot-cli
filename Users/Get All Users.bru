@@ -1,0 +1,70 @@
+meta {
+  name: Get All Users
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/users
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("response is an array", function() {
+    const body = res.getBody();
+    expect(Array.isArray(body)).to.be.true;
+  });
+
+  test("array is not empty", function() {
+    const body = res.getBody();
+    expect(body.length).to.be.greaterThan(0);
+  });
+
+  test("every user has id, name, email, role", function() {
+    const body = res.getBody();
+    body.forEach(user => {
+      expect(user).to.have.property("id");
+      expect(user).to.have.property("name");
+      expect(user).to.have.property("email");
+      expect(user).to.have.property("role");
+    });
+  });
+
+  test("id is a number for every user", function() {
+    const body = res.getBody();
+    body.forEach(user => {
+      expect(typeof user.id).to.equal("number");
+    });
+  });
+
+  test("email contains @ for every user", function() {
+    const body = res.getBody();
+    body.forEach(user => {
+      expect(user.email).to.include("@");
+    });
+  });
+
+  test("name is a non-empty string for every user", function() {
+    const body = res.getBody();
+    body.forEach(user => {
+      expect(typeof user.name).to.equal("string");
+      expect(user.name.length).to.be.greaterThan(0);
+    });
+  });
+
+  test("role is either admin or user", function() {
+    const body = res.getBody();
+    body.forEach(user => {
+      expect(["admin", "user"]).to.include(user.role);
+    });
+  });
+
+  test("content-type is application/json", function() {
+    expect(res.getHeader("content-type")).to.include("application/json");
+  });
+}

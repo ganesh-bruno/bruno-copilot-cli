@@ -1,0 +1,62 @@
+meta {
+  name: Create User
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Dave Wilson",
+    "email": "dave@example.com",
+    "role": "admin"
+  }
+}
+
+tests {
+  test("status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("response has all user fields", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("id");
+    expect(body).to.have.property("name");
+    expect(body).to.have.property("email");
+    expect(body).to.have.property("role");
+  });
+
+  test("returned name matches sent value", function() {
+    const body = res.getBody();
+    expect(body.name).to.equal("Dave Wilson");
+  });
+
+  test("returned email matches sent value", function() {
+    const body = res.getBody();
+    expect(body.email).to.equal("dave@example.com");
+  });
+
+  test("returned role matches sent value", function() {
+    const body = res.getBody();
+    expect(body.role).to.equal("admin");
+  });
+
+  test("id is an auto-generated number", function() {
+    const body = res.getBody();
+    expect(typeof body.id).to.equal("number");
+    expect(body.id).to.be.greaterThan(0);
+  });
+
+  test("content-type is application/json", function() {
+    expect(res.getHeader("content-type")).to.include("application/json");
+  });
+}
